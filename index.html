@@ -179,8 +179,8 @@
     font-family:'JetBrains Mono', monospace;
   }
   .kpi .delta{
-    margin-top:6px; font-size:11.5px; font-weight:600;
-    display:flex; align-items:center; gap:5px;
+    margin-top:6px; font-size:11px; font-weight:600;
+    display:flex; flex-direction:column; gap:2px;
   }
   .delta.pos{ color:var(--pos); }
   .delta.neg{ color:var(--neg); }
@@ -305,8 +305,11 @@
     </div>
     <div class="kpi">
       <div class="label" id="kpi5Label">Ending Cash Balance</div>
-      <div class="value" id="kpi5Value">฿22,041,105</div>
-      <div class="delta pos" id="kpi5Delta">▲ Net Cash Movement +฿5.65M</div>
+      <div class="value" id="kpi5Value">฿23,708,894.30</div>
+      <div class="delta flat" id="kpi5Delta" style="font-size:10.5px;">
+        <span style="color:#1E56A0; font-weight:700;">● Bank: ฿22,041,104.79</span>
+        <span style="color:#6E6579;">● PDC Cheques: ฿1,667,789.51</span>
+      </div>
     </div>
   </div>
 
@@ -460,31 +463,49 @@ function updateDropdowns() {
 }
 
 const RED='#931914', MAROON='#741041', PURPLE='#4D2773', INK='#1B1424', CASH_BLUE='#1E56A0';
+const RED_2025='rgba(147,25,20,0.35)', PURPLE_2025='rgba(77,39,115,0.30)';
 const grid = { color:'#EEE9F2' };
 
 // Initialize Chart.js Instances
 const mainChart = new Chart(document.getElementById('mainChart'), {
-  data:{ labels: months, datasets:[] },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    interaction:{ mode:'index', intersect:false },
-    plugins:{
-      legend:{ position:'top', align:'end', labels:{ usePointStyle:true, boxWidth:8, font:{size:11,weight:600} } },
-      tooltip:{ callbacks:{ label: ctx => `${ctx.dataset.label}: ${fmtTHBsigned(ctx.parsed.y)}` } }
+  type: 'bar',
+  data: { labels: months, datasets: [] },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 11, weight: 600 } } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtTHBsigned(ctx.parsed.y)}` } }
     },
-    scales:{ x:{ grid:{ display:false } }, y:{ grid, ticks:{ callback:v=>'฿'+(v/1e6).toFixed(1)+'M', font:{size:10.5} } } }
+    scales: {
+      x: {
+        type: 'category',
+        grid: { display: false },
+        ticks: { font: { size: 11, weight: 600 }, color: INK }
+      },
+      y: {
+        grid: grid,
+        ticks: { callback: v => '฿' + (v/1e6).toFixed(1) + 'M', font: { size: 10.5 } }
+      }
+    }
   }
 });
 
 const subChart = new Chart(document.getElementById('subChart'), {
-  type:'bar', data:{ labels: months, datasets:[] },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{ position:'top', align:'end', labels:{ usePointStyle:true, boxWidth:8, font:{size:10,weight:600} } },
-      tooltip:{ callbacks:{ label: ctx => `${ctx.dataset.label}: ${fmtTHB(ctx.parsed.y)}` } }
+  type: 'bar',
+  data: { labels: months, datasets: [] },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10, weight: 600 } } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmtTHB(ctx.parsed.y)}` } }
     },
-    scales:{ x:{ stacked:true, grid:{ display:false } }, y:{ stacked:true, grid, ticks:{ callback:v=>'฿'+(v/1e6).toFixed(1)+'M', font:{size:10.5} } } }
+    scales: {
+      x: { type: 'category', stacked: true, grid: { display: false }, ticks: { font: { size: 11, weight: 600 }, color: INK } },
+      y: { stacked: true, grid: grid, ticks: { callback: v => '฿' + (v/1e6).toFixed(1) + 'M', font: { size: 10.5 } } }
+    }
   }
 });
 
@@ -531,45 +552,59 @@ function renderPage(pageNumber) {
 
   const pageNotes = {
     1: 'หน้า 1: ภาพรวมผลประกอบการกำไรขาดทุนทั้งหมด (Operating + Non-Operating P&L) พร้อมแสดง % สัดส่วนเทียบรายได้ครบทุกคอลัมน์',
-    2: 'หน้า 2: เปรียบเทียบผลประกอบการรายเดือนปี 2026 เทียบกับปี 2025 (YoY Comparison) พร้อม % Growth และ % Change ครบทุกมิติ',
+    2: 'หน้า 2: เปรียบเทียบผลประกอบการรายเดือนปี 2026 เทียบกับปี 2025 (YoY Comparison) แยกสีการ์ด KPI ชัดเจนในทิศทางเดียวกับกราฟแท่ง',
     3: 'หน้า 3: รายงานกระแสเงินสดรับ-จ่ายจริง พร้อม % เปรียบเทียบสัดส่วนรายจ่ายเทียบกับรายรับเงินสดจริง (PAID % OF RECEIPTS)',
     4: 'หน้า 4: เปรียบเทียบมิติระหว่าง รายได้/ค่าใช้จ่ายทางบัญชี กับ รายรับ/รายจ่ายเงินสดจริง พร้อม % ประสิทธิภาพการจัดเก็บและการเบิกจ่าย'
   };
   document.getElementById('scopeNote').textContent = pageNotes[pageNumber];
 
   if (pageNumber === 1) {
-    // ------------------- PAGE 1: P&L ALL (WITH COMPLETE % COLUMNS) -------------------
+    // ------------------- PAGE 1: P&L ALL -------------------
     const lastRev = sliceArr(rev2026)[lastIdx];
     const lastNet = sliceArr(netProfit2026)[lastIdx];
     const lastMargin = lastRev ? (lastNet / lastRev * 100).toFixed(1) : '0.0';
 
     document.getElementById('kpi1Label').textContent = `Aug Net Profit`;
+    document.getElementById('kpi1Label').style.color = 'var(--muted)';
     document.getElementById('kpi1Value').textContent = fmtTHB(lastNet);
-    document.getElementById('kpi1Delta').textContent = `▲ Net Margin: ${lastMargin}%`;
+    document.getElementById('kpi1Value').style.color = 'var(--ink)';
+    document.getElementById('kpi1Delta').innerHTML = `▲ Net Margin: ${lastMargin}%`;
 
     document.getElementById('kpi2Label').textContent = `YTD Revenue`;
+    document.getElementById('kpi2Label').style.color = 'var(--muted)';
     document.getElementById('kpi2Value').textContent = fmtTHB(sum(sliceArr(rev2026)));
-    document.getElementById('kpi2Delta').textContent = `Aug Rev: ${fmtTHB(lastRev)}`;
+    document.getElementById('kpi2Value').style.color = 'var(--ink)';
+    document.getElementById('kpi2Delta').innerHTML = `Aug Rev: ${fmtTHB(lastRev)}`;
 
     document.getElementById('kpi3Label').textContent = `YTD Total Expenses`;
+    document.getElementById('kpi3Label').style.color = 'var(--muted)';
     document.getElementById('kpi3Value').textContent = fmtTHB(sum(sliceArr(totalExp2026)));
-    document.getElementById('kpi3Delta').textContent = `Aug Exp: ${fmtTHB(sliceArr(totalExp2026)[lastIdx])}`;
+    document.getElementById('kpi3Value').style.color = 'var(--ink)';
+    document.getElementById('kpi3Delta').innerHTML = `Aug Exp: ${fmtTHB(sliceArr(totalExp2026)[lastIdx])}`;
 
     document.getElementById('kpi4Label').textContent = `YTD Net Profit`;
+    document.getElementById('kpi4Label').style.color = 'var(--muted)';
     document.getElementById('kpi4Value').textContent = fmtTHB(sum(sliceArr(netProfit2026)));
-    document.getElementById('kpi4Delta').textContent = `▲ YTD Net Margin: ${(sum(sliceArr(rev2026))?(sum(sliceArr(netProfit2026))/sum(sliceArr(rev2026))*100):0).toFixed(1)}%`;
+    document.getElementById('kpi4Value').style.color = 'var(--ink)';
+    document.getElementById('kpi4Delta').innerHTML = `▲ YTD Net Margin: ${(sum(sliceArr(rev2026))?(sum(sliceArr(netProfit2026))/sum(sliceArr(rev2026))*100):0).toFixed(1)}%`;
 
     document.getElementById('kpi5Label').textContent = `Ending Cash Balance`;
-    document.getElementById('kpi5Value').textContent = fmtTHB(sliceArr(cashBank2026)[lastIdx]);
-    document.getElementById('kpi5Delta').textContent = `▲ Net Cash Movement: ${fmtTHBsigned(sum(sliceArr(netCashMove2026)))}`;
+    document.getElementById('kpi5Label').style.color = 'var(--muted)';
+    document.getElementById('kpi5Value').textContent = `฿23,708,894.30`;
+    document.getElementById('kpi5Value').style.color = 'var(--ink)';
+    document.getElementById('kpi5Delta').innerHTML = `
+      <span style="color:#1E56A0; font-weight:700;">● In Bank: ฿22,041,104.79</span>
+      <span style="color:#6E6579;">● PDC Cheques: ฿1,667,789.51</span>
+    `;
 
     document.getElementById('mainChartTitle').textContent = `Total Revenue vs Total Expenses — 2026 (${rangeLabel})`;
     document.getElementById('mainChartDesc').textContent = 'ภาพรวมรายได้ ค่าใช้จ่ายรวม และกำไรสุทธิทางบัญชี';
+    
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Total Revenue', data:sliceArr(rev2026), backgroundColor:'rgba(147,25,20,0.85)', borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Total Expenses', data:sliceArr(totalExp2026), backgroundColor:'rgba(77,39,115,0.75)', borderRadius:4, barPercentage:0.6 },
-      { type:'line', label:'Net Profit', data:sliceArr(netProfit2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:3.5, tension:.35 }
+      { type:'bar', label:'Total Revenue', data:sliceArr(rev2026), backgroundColor:RED, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Total Expenses', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
+      { type:'line', label:'Net Profit', data:sliceArr(netProfit2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     mainChart.update();
 
@@ -654,40 +689,56 @@ function renderPage(pageNumber) {
     tbody.appendChild(trT);
 
   } else if (pageNumber === 2) {
-    // ------------------- PAGE 2: COMPARE YEARS -------------------
+    // ------------------- PAGE 2: COMPARE YEARS (ALIGNED COLOR CODES FOR KPI CARDS) -------------------
     const r26=sum(sliceArr(rev2026)), r25=sum(sliceArr(rev2025));
     const e26=sum(sliceArr(totalExp2026)), e25=sum(sliceArr(totalExp2025));
     const n26=sum(sliceArr(netProfit2026)), n25=sum(sliceArr(netProfit2025));
     const rGrowth = r25 ? (r26-r25)/r25*100 : 0;
 
-    document.getElementById('kpi1Label').textContent = `YTD Revenue 2026`;
+    // KPI Card 1: YTD Revenue 2026 (Red #931914)
+    document.getElementById('kpi1Label').textContent = `YTD REVENUE 2026`;
+    document.getElementById('kpi1Label').style.color = 'var(--red)';
     document.getElementById('kpi1Value').textContent = fmtTHB(r26);
-    document.getElementById('kpi1Delta').textContent = `${rGrowth>=0?'▲':'▼'} YoY Growth: ${rGrowth.toFixed(1)}%`;
+    document.getElementById('kpi1Value').style.color = 'var(--red)';
+    document.getElementById('kpi1Delta').innerHTML = `${rGrowth>=0?'▲':'▼'} YoY Growth: ${rGrowth.toFixed(1)}%`;
 
-    document.getElementById('kpi2Label').textContent = `YTD Revenue 2025`;
+    // KPI Card 2: YTD Revenue 2025 (Light Red #B87272)
+    document.getElementById('kpi2Label').textContent = `YTD REVENUE 2025`;
+    document.getElementById('kpi2Label').style.color = '#B87272';
     document.getElementById('kpi2Value').textContent = fmtTHB(r25);
-    document.getElementById('kpi2Delta').textContent = `Prior Year Baseline`;
+    document.getElementById('kpi2Value').style.color = '#B87272';
+    document.getElementById('kpi2Delta').innerHTML = `Prior Year Baseline`;
 
-    document.getElementById('kpi3Label').textContent = `YTD Expenses 2026`;
+    // KPI Card 3: YTD Expenses 2026 (Purple #4D2773 & Light Purple Subtext)
+    document.getElementById('kpi3Label').textContent = `YTD EXPENSES 2026`;
+    document.getElementById('kpi3Label').style.color = 'var(--purple)';
     document.getElementById('kpi3Value').textContent = fmtTHB(e26);
-    document.getElementById('kpi3Delta').textContent = `2025: ${fmtTHB(e25)}`;
+    document.getElementById('kpi3Value').style.color = 'var(--purple)';
+    document.getElementById('kpi3Delta').innerHTML = `<span style="color:#7D6293;">2025: ${fmtTHB(e25)}</span>`;
 
-    document.getElementById('kpi4Label').textContent = `YTD Net Profit 2026`;
+    // KPI Card 4: YTD Net Profit 2026 (Maroon #741041)
+    document.getElementById('kpi4Label').textContent = `YTD NET PROFIT 2026`;
+    document.getElementById('kpi4Label').style.color = 'var(--maroon)';
     document.getElementById('kpi4Value').textContent = fmtTHB(n26);
-    document.getElementById('kpi4Delta').textContent = `▲ vs 2025: ${fmtTHBsigned(n26 - n25)}`;
+    document.getElementById('kpi4Value').style.color = 'var(--maroon)';
+    document.getElementById('kpi4Delta').innerHTML = `▲ vs 2025: ${fmtTHBsigned(n26 - n25)}`;
 
-    document.getElementById('kpi5Label').textContent = `YTD Net Profit 2025`;
+    // KPI Card 5: YTD Net Profit 2025 (Light Maroon #9E7B82)
+    document.getElementById('kpi5Label').textContent = `YTD NET PROFIT 2025`;
+    document.getElementById('kpi5Label').style.color = '#9E7B82';
     document.getElementById('kpi5Value').textContent = fmtTHB(n25);
-    document.getElementById('kpi5Delta').textContent = `Prior Year Profit`;
+    document.getElementById('kpi5Value').style.color = '#9E7B82';
+    document.getElementById('kpi5Delta').innerHTML = `Prior Year Profit`;
 
     document.getElementById('mainChartTitle').textContent = `Revenue & Expense YoY Comparison — 2025 vs 2026 (${rangeLabel})`;
     document.getElementById('mainChartDesc').textContent = 'เปรียบเทียบการเติบโตของรายได้และค่าใช้จ่ายแบบ Side-by-side รายเดือน';
+    
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Revenue 2025', data:sliceArr(rev2025), backgroundColor:'rgba(147,25,20,0.3)', borderRadius:4 },
-      { type:'bar', label:'Revenue 2026', data:sliceArr(rev2026), backgroundColor:'rgba(147,25,20,0.9)', borderRadius:4 },
-      { type:'bar', label:'Expenses 2025', data:sliceArr(totalExp2025), backgroundColor:'rgba(77,39,115,0.25)', borderRadius:4 },
-      { type:'bar', label:'Expenses 2026', data:sliceArr(totalExp2026), backgroundColor:'rgba(77,39,115,0.75)', borderRadius:4 }
+      { type:'bar', label:'Revenue 2025', data:sliceArr(rev2025), backgroundColor:RED_2025, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Revenue 2026', data:sliceArr(rev2026), backgroundColor:RED, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Expenses 2025', data:sliceArr(totalExp2025), backgroundColor:PURPLE_2025, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Expenses 2026', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.6 }
     ];
     mainChart.update();
 
@@ -695,8 +746,8 @@ function renderPage(pageNumber) {
     document.getElementById('subChartDesc').textContent = 'เปรียบเทียบกำไรสุทธิรายเดือนระหว่างปี 2025 และ 2026';
     subChart.data.labels = labels;
     subChart.data.datasets = [
-      { type:'bar', label:'Net Profit 2025', data:sliceArr(netProfit2025), backgroundColor:'#D8CFE0', borderRadius:4 },
-      { type:'bar', label:'Net Profit 2026', data:sliceArr(netProfit2026), backgroundColor:RED, borderRadius:4 }
+      { type:'bar', label:'Net Profit 2025', data:sliceArr(netProfit2025), backgroundColor:'#D8CFE0', borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Net Profit 2026', data:sliceArr(netProfit2026), backgroundColor:MAROON, borderRadius:4, barPercentage:0.55 }
     ];
     subChart.update();
 
@@ -768,38 +819,52 @@ function renderPage(pageNumber) {
     tbody.appendChild(trT);
 
   } else if (pageNumber === 3) {
-    // ------------------- PAGE 3: CASH FLOW (MODIFIED ACCORDING TO USER IMAGE) -------------------
+    // ------------------- PAGE 3: CASH FLOW -------------------
     const crTot = sum(sliceArr(cashRecOp2026));
     const cpTot = sum(sliceArr(totalCashPaid2026));
     const netMove = sum(sliceArr(netCashMove2026));
 
     document.getElementById('kpi1Label').textContent = `Aug Cash Receipts`;
+    document.getElementById('kpi1Label').style.color = 'var(--muted)';
     document.getElementById('kpi1Value').textContent = fmtTHB(sliceArr(cashRecOp2026)[lastIdx]);
-    document.getElementById('kpi1Delta').textContent = `Operating Inflow`;
+    document.getElementById('kpi1Value').style.color = 'var(--ink)';
+    document.getElementById('kpi1Delta').innerHTML = `Operating Inflow`;
 
     document.getElementById('kpi2Label').textContent = `YTD Cash Receipts`;
+    document.getElementById('kpi2Label').style.color = 'var(--muted)';
     document.getElementById('kpi2Value').textContent = fmtTHB(crTot);
-    document.getElementById('kpi2Delta').textContent = `Cash Collections`;
+    document.getElementById('kpi2Value').style.color = 'var(--ink)';
+    document.getElementById('kpi2Delta').innerHTML = `Cash Collections`;
 
     document.getElementById('kpi3Label').textContent = `YTD Total Cash Paid Out`;
+    document.getElementById('kpi3Label').style.color = 'var(--muted)';
     document.getElementById('kpi3Value').textContent = fmtTHB(cpTot);
-    document.getElementById('kpi3Delta').textContent = `Cash Disbursements`;
+    document.getElementById('kpi3Value').style.color = 'var(--ink)';
+    document.getElementById('kpi3Delta').innerHTML = `Cash Disbursements`;
 
     document.getElementById('kpi4Label').textContent = `YTD Net Cash Movement`;
+    document.getElementById('kpi4Label').style.color = 'var(--muted)';
     document.getElementById('kpi4Value').textContent = fmtTHBsigned(netMove);
-    document.getElementById('kpi4Delta').textContent = `▲ Net Cash Growth`;
+    document.getElementById('kpi4Value').style.color = 'var(--ink)';
+    document.getElementById('kpi4Delta').innerHTML = `▲ Net Cash Growth`;
 
-    document.getElementById('kpi5Label').textContent = `Ending Cash in Bank`;
-    document.getElementById('kpi5Value').textContent = fmtTHB(sliceArr(cashBank2026)[lastIdx]);
-    document.getElementById('kpi5Delta').textContent = `Total Bank Liquid`;
+    document.getElementById('kpi5Label').textContent = `Ending Cash Balance`;
+    document.getElementById('kpi5Label').style.color = 'var(--muted)';
+    document.getElementById('kpi5Value').textContent = `฿23,708,894.30`;
+    document.getElementById('kpi5Value').style.color = 'var(--ink)';
+    document.getElementById('kpi5Delta').innerHTML = `
+      <span style="color:#1E56A0; font-weight:700;">● In Bank: ฿22,041,104.79</span>
+      <span style="color:#6E6579;">● PDC Cheques: ฿1,667,789.51</span>
+    `;
 
     document.getElementById('mainChartTitle').textContent = `Cash Receipts vs Cash Paid Out — 2026 (${rangeLabel})`;
     document.getElementById('mainChartDesc').textContent = 'กระแสเงินสดรับจริง รายจ่ายเงินสด และยอดเงินสดคงเหลือในธนาคาร';
+    
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Cash Receipts', data:sliceArr(cashRecOp2026), backgroundColor:'rgba(30,86,160,0.85)', borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Total Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:'rgba(77,39,115,0.75)', borderRadius:4, barPercentage:0.6 },
-      { type:'line', label:'Ending Cash Balance', data:sliceArr(cashBank2026), borderColor:CASH_BLUE, backgroundColor:CASH_BLUE, borderWidth:2.5, pointRadius:3.5, tension:.35 }
+      { type:'bar', label:'Cash Receipts', data:sliceArr(cashRecOp2026), backgroundColor:CASH_BLUE, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Total Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:'#E07A5F', borderRadius:4, barPercentage:0.55 },
+      { type:'line', label:'Ending Cash Balance', data:sliceArr(cashBank2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     mainChart.update();
 
@@ -819,7 +884,7 @@ function renderPage(pageNumber) {
     catChart2.data.datasets[0].data = opExpCategoryMap.map(x=>x.val);
     catChart2.update();
 
-    // Table Cash Flow (Removed RECEIPTS % OF REV, calculated PAID % OF RECEIPTS)
+    // Table Cash Flow
     document.getElementById('tableTitle').textContent = `Monthly Cash Flow Detail — FY2026`;
     document.getElementById('tableDesc').textContent = `Tabular Breakdown`;
     theadRow.innerHTML = `
@@ -878,32 +943,43 @@ function renderPage(pageNumber) {
     const expDiff = cpTot - eTot;
 
     document.getElementById('kpi1Label').textContent = `YTD Operating Revenue`;
+    document.getElementById('kpi1Label').style.color = 'var(--muted)';
     document.getElementById('kpi1Value').textContent = fmtTHB(rTot);
-    document.getElementById('kpi1Delta').textContent = `Accrual Basis`;
+    document.getElementById('kpi1Value').style.color = 'var(--ink)';
+    document.getElementById('kpi1Delta').innerHTML = `Accrual Basis`;
 
     document.getElementById('kpi2Label').textContent = `YTD Cash Receipts`;
+    document.getElementById('kpi2Label').style.color = 'var(--muted)';
     document.getElementById('kpi2Value').textContent = fmtTHB(crTot);
-    document.getElementById('kpi2Delta').textContent = `▲ Collection Diff: ${fmtTHBsigned(revDiff)}`;
+    document.getElementById('kpi2Value').style.color = 'var(--ink)';
+    document.getElementById('kpi2Delta').innerHTML = `▲ Collection Diff: ${fmtTHBsigned(revDiff)}`;
 
     document.getElementById('kpi3Label').textContent = `YTD Total Expenses`;
+    document.getElementById('kpi3Label').style.color = 'var(--muted)';
     document.getElementById('kpi3Value').textContent = fmtTHB(eTot);
-    document.getElementById('kpi3Delta').textContent = `Accrual Basis`;
+    document.getElementById('kpi3Value').style.color = 'var(--ink)';
+    document.getElementById('kpi3Delta').innerHTML = `Accrual Basis`;
 
     document.getElementById('kpi4Label').textContent = `YTD Cash Paid Out`;
+    document.getElementById('kpi4Label').style.color = 'var(--muted)';
     document.getElementById('kpi4Value').textContent = fmtTHB(cpTot);
-    document.getElementById('kpi4Delta').textContent = `Variance: ${fmtTHBsigned(expDiff)}`;
+    document.getElementById('kpi4Value').style.color = 'var(--ink)';
+    document.getElementById('kpi4Delta').innerHTML = `Variance: ${fmtTHBsigned(expDiff)}`;
 
     document.getElementById('kpi5Label').textContent = `Net Profit vs Cash Flow`;
+    document.getElementById('kpi5Label').style.color = 'var(--muted)';
     document.getElementById('kpi5Value').textContent = fmtTHB(netProfitTot);
-    document.getElementById('kpi5Delta').textContent = `Cash Flow: ${fmtTHBsigned(netCashTot)}`;
+    document.getElementById('kpi5Value').style.color = 'var(--ink)';
+    document.getElementById('kpi5Delta').innerHTML = `Cash Flow: ${fmtTHBsigned(netCashTot)}`;
 
     document.getElementById('mainChartTitle').textContent = `Accrual Revenue vs Cash Receipts — 2026 (${rangeLabel})`;
     document.getElementById('mainChartDesc').textContent = 'เปรียบเทียบการรับรู้รายได้ทางบัญชีกับการเก็บเงินสดจริง';
+    
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Operating Revenue (Accrual)', data:sliceArr(rev2026), backgroundColor:'rgba(147,25,20,0.85)', borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Cash Receipts (Cash Flow)', data:sliceArr(cashRecOp2026), backgroundColor:'rgba(30,86,160,0.75)', borderRadius:4, barPercentage:0.6 },
-      { type:'line', label:'Net Profit (Accrual)', data:sliceArr(netProfit2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:3.5, tension:.35 }
+      { type:'bar', label:'Operating Revenue (Accrual)', data:sliceArr(rev2026), backgroundColor:MAROON, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Cash Receipts (Cash Flow)', data:sliceArr(cashRecOp2026), backgroundColor:CASH_BLUE, borderRadius:4, barPercentage:0.55 },
+      { type:'line', label:'Net Profit (Accrual)', data:sliceArr(netProfit2026), borderColor:RED, backgroundColor:RED, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     mainChart.update();
 
@@ -911,9 +987,9 @@ function renderPage(pageNumber) {
     document.getElementById('subChartDesc').textContent = 'เปรียบเทียบค่าใช้จ่ายทางบัญชีกับการจ่ายเงินสดจริง';
     subChart.data.labels = labels;
     subChart.data.datasets = [
-      { type:'bar', label:'Accrual Expenses', data:sliceArr(totalExp2026), backgroundColor:'rgba(116,16,65,0.85)', borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:'rgba(77,39,115,0.75)', borderRadius:4, barPercentage:0.6 },
-      { type:'line', label:'Ending Cash Balance', data:sliceArr(cashBank2026), borderColor:CASH_BLUE, backgroundColor:CASH_BLUE, borderWidth:2.5, pointRadius:3.5, tension:.35 }
+      { type:'bar', label:'Accrual Expenses', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:'#E07A5F', borderRadius:4, barPercentage:0.55 },
+      { type:'line', label:'Ending Cash Balance', data:sliceArr(cashBank2026), borderColor:CASH_BLUE, backgroundColor:CASH_BLUE, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     subChart.update();
 
