@@ -263,10 +263,11 @@
         <input type="file" id="fileUploader" accept=".xlsx, .xls, .csv" />
       </div>
       <button class="btn-download" id="downloadBtn">📥 Download Executive Summary</button>
+      <button class="btn-download" id="saveAsDefaultBtn">💾 Save as New Default File</button>
     </div>
   </div>
 
-  <div class="scope-note" id="scopeNote">หน้า 1: ภาพรวมผลประกอบการกำไรขาดทุนทั้งหมด (Total Operating + Non-Operating P&L)</div>
+  <div class="scope-note" id="scopeNote">Page 1: Overview of overall P&amp;L performance (Total Operating + Non-Operating P&amp;L)</div>
 
   <div class="range-bar" id="rangeBar">
     <span class="range-title">Date Range:</span>
@@ -463,7 +464,7 @@ function updateDropdowns() {
 }
 
 const RED='#931914', MAROON='#741041', PURPLE='#4D2773', INK='#1B1424', CASH_BLUE='#1E56A0';
-const RED_2025='rgba(147,25,20,0.35)', PURPLE_2025='rgba(77,39,115,0.30)';
+const RED_2025='#B87272', PURPLE_2025='#7D6293', PROFIT_2025='#9E7B82';
 const grid = { color:'#EEE9F2' };
 
 // Initialize Chart.js Instances
@@ -551,10 +552,10 @@ function renderPage(pageNumber) {
   const lastIdx = labels.length - 1;
 
   const pageNotes = {
-    1: 'หน้า 1: ภาพรวมผลประกอบการกำไรขาดทุนทั้งหมด (Operating + Non-Operating P&L) พร้อมแสดง % สัดส่วนเทียบรายได้ครบทุกคอลัมน์',
-    2: 'หน้า 2: เปรียบเทียบผลประกอบการรายเดือนปี 2026 เทียบกับปี 2025 (YoY Comparison) แยกสีการ์ด KPI ชัดเจนในทิศทางเดียวกับกราฟแท่ง',
-    3: 'หน้า 3: รายงานกระแสเงินสดรับ-จ่ายจริง พร้อม % เปรียบเทียบสัดส่วนรายจ่ายเทียบกับรายรับเงินสดจริง (PAID % OF RECEIPTS)',
-    4: 'หน้า 4: เปรียบเทียบมิติระหว่าง รายได้/ค่าใช้จ่ายทางบัญชี กับ รายรับ/รายจ่ายเงินสดจริง พร้อม % ประสิทธิภาพการจัดเก็บและการเบิกจ่าย'
+    1: 'Page 1: Overview of overall P&L performance (Operating + Non-Operating P&L), with % share of revenue shown for every column',
+    2: 'Page 2: Monthly performance comparison for 2026 vs 2025 (YoY Comparison), with KPI cards color-coded to match the bar chart direction',
+    3: 'Page 3: Actual cash receipts and payments report, with % comparison of cash paid against actual cash received (PAID % OF RECEIPTS)',
+    4: 'Page 4: Comparison between accounting revenue/expenses and actual cash receipts/payments, with % efficiency of collections and disbursements'
   };
   document.getElementById('scopeNote').textContent = pageNotes[pageNumber];
 
@@ -598,7 +599,7 @@ function renderPage(pageNumber) {
     `;
 
     document.getElementById('mainChartTitle').textContent = `Total Revenue vs Total Expenses — 2026 (${rangeLabel})`;
-    document.getElementById('mainChartDesc').textContent = 'ภาพรวมรายได้ ค่าใช้จ่ายรวม และกำไรสุทธิทางบัญชี';
+    document.getElementById('mainChartDesc').textContent = 'Overview of revenue, total expenses, and net accounting profit';
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
@@ -609,7 +610,7 @@ function renderPage(pageNumber) {
     mainChart.update();
 
     document.getElementById('subChartTitle').textContent = `Cost Structure Breakdown`;
-    document.getElementById('subChartDesc').textContent = 'จำแนกโครงสร้างค่าใช้จ่ายตามประเภทหลัก';
+    document.getElementById('subChartDesc').textContent = 'Expense structure broken down by main category';
     subChart.data.labels = labels;
     subChart.data.datasets = [
       { type:'bar', label:'Cost of Sales', data:sliceArr(costSales), backgroundColor: RED, stack:'s' },
@@ -702,11 +703,11 @@ function renderPage(pageNumber) {
     document.getElementById('kpi1Value').style.color = 'var(--red)';
     document.getElementById('kpi1Delta').innerHTML = `${rGrowth>=0?'▲':'▼'} YoY Growth: ${rGrowth.toFixed(1)}%`;
 
-    // KPI Card 2: YTD Revenue 2025 (Light Red #B87272)
+    // KPI Card 2: YTD Revenue 2025 (Light Red #B87272 — corporate-brand tint of #931914)
     document.getElementById('kpi2Label').textContent = `YTD REVENUE 2025`;
-    document.getElementById('kpi2Label').style.color = '#B87272';
+    document.getElementById('kpi2Label').style.color = RED_2025;
     document.getElementById('kpi2Value').textContent = fmtTHB(r25);
-    document.getElementById('kpi2Value').style.color = '#B87272';
+    document.getElementById('kpi2Value').style.color = RED_2025;
     document.getElementById('kpi2Delta').innerHTML = `Prior Year Baseline`;
 
     // KPI Card 3: YTD Expenses 2026 (Purple #4D2773 & Light Purple Subtext)
@@ -714,7 +715,7 @@ function renderPage(pageNumber) {
     document.getElementById('kpi3Label').style.color = 'var(--purple)';
     document.getElementById('kpi3Value').textContent = fmtTHB(e26);
     document.getElementById('kpi3Value').style.color = 'var(--purple)';
-    document.getElementById('kpi3Delta').innerHTML = `<span style="color:#7D6293;">2025: ${fmtTHB(e25)}</span>`;
+    document.getElementById('kpi3Delta').innerHTML = `<span style="color:${PURPLE_2025};">2025: ${fmtTHB(e25)}</span>`;
 
     // KPI Card 4: YTD Net Profit 2026 (Maroon #741041)
     document.getElementById('kpi4Label').textContent = `YTD NET PROFIT 2026`;
@@ -723,31 +724,31 @@ function renderPage(pageNumber) {
     document.getElementById('kpi4Value').style.color = 'var(--maroon)';
     document.getElementById('kpi4Delta').innerHTML = `▲ vs 2025: ${fmtTHBsigned(n26 - n25)}`;
 
-    // KPI Card 5: YTD Net Profit 2025 (Light Maroon #9E7B82)
+    // KPI Card 5: YTD Net Profit 2025 (Light Maroon #9E7B82 — corporate-brand tint of #741041)
     document.getElementById('kpi5Label').textContent = `YTD NET PROFIT 2025`;
-    document.getElementById('kpi5Label').style.color = '#9E7B82';
+    document.getElementById('kpi5Label').style.color = PROFIT_2025;
     document.getElementById('kpi5Value').textContent = fmtTHB(n25);
-    document.getElementById('kpi5Value').style.color = '#9E7B82';
+    document.getElementById('kpi5Value').style.color = PROFIT_2025;
     document.getElementById('kpi5Delta').innerHTML = `Prior Year Profit`;
 
-    document.getElementById('mainChartTitle').textContent = `Revenue & Expense YoY Comparison — 2025 vs 2026 (${rangeLabel})`;
-    document.getElementById('mainChartDesc').textContent = 'เปรียบเทียบการเติบโตของรายได้และค่าใช้จ่ายแบบ Side-by-side รายเดือน';
+    document.getElementById('mainChartTitle').textContent = `Revenue & Expense YoY Comparison — 2026 vs 2025 (${rangeLabel})`;
+    document.getElementById('mainChartDesc').textContent = 'Side-by-side monthly comparison of revenue and expense growth';
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Revenue 2025', data:sliceArr(rev2025), backgroundColor:RED_2025, borderRadius:4, barPercentage:0.6 },
       { type:'bar', label:'Revenue 2026', data:sliceArr(rev2026), backgroundColor:RED, borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Expenses 2025', data:sliceArr(totalExp2025), backgroundColor:PURPLE_2025, borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Expenses 2026', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.6 }
+      { type:'bar', label:'Revenue 2025', data:sliceArr(rev2025), backgroundColor:RED_2025, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Expenses 2026', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Expenses 2025', data:sliceArr(totalExp2025), backgroundColor:PURPLE_2025, borderRadius:4, barPercentage:0.6 }
     ];
     mainChart.update();
 
     document.getElementById('subChartTitle').textContent = `Net Profit Comparison — YoY`;
-    document.getElementById('subChartDesc').textContent = 'เปรียบเทียบกำไรสุทธิรายเดือนระหว่างปี 2025 และ 2026';
+    document.getElementById('subChartDesc').textContent = 'Monthly net profit comparison between 2026 and 2025';
     subChart.data.labels = labels;
     subChart.data.datasets = [
-      { type:'bar', label:'Net Profit 2025', data:sliceArr(netProfit2025), backgroundColor:'#D8CFE0', borderRadius:4, barPercentage:0.55 },
-      { type:'bar', label:'Net Profit 2026', data:sliceArr(netProfit2026), backgroundColor:MAROON, borderRadius:4, barPercentage:0.55 }
+      { type:'bar', label:'Net Profit 2026', data:sliceArr(netProfit2026), backgroundColor:MAROON, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Net Profit 2025', data:sliceArr(netProfit2025), backgroundColor:PROFIT_2025, borderRadius:4, barPercentage:0.55 }
     ];
     subChart.update();
 
@@ -760,18 +761,18 @@ function renderPage(pageNumber) {
     catChart2.update();
 
     // Table Compare Years
-    document.getElementById('tableTitle').textContent = `Monthly Financial YoY Comparison — 2025 vs 2026`;
+    document.getElementById('tableTitle').textContent = `Monthly Financial YoY Comparison — 2026 vs 2025`;
     document.getElementById('tableDesc').textContent = `Tabular Breakdown`;
     theadRow.innerHTML = `
       <th>MONTH</th>
-      <th>REVENUE 2025</th>
       <th>REVENUE 2026</th>
+      <th>REVENUE 2025</th>
       <th>REV YOY GROWTH %</th>
-      <th>EXPENSES 2025</th>
       <th>EXPENSES 2026</th>
+      <th>EXPENSES 2025</th>
       <th>EXP YOY CHANGE %</th>
-      <th>NET PROFIT 2025</th>
       <th>NET PROFIT 2026</th>
+      <th>NET PROFIT 2025</th>
       <th>NET MARGIN 2026 %</th>
     `;
     tbody.innerHTML = '';
@@ -786,14 +787,14 @@ function renderPage(pageNumber) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${m}</td>
-        <td>${fmtTHB(r25)}</td>
-        <td>${fmtTHB(r26)}</td>
+        <td style="color:${RED}; font-weight:600;">${fmtTHB(r26)}</td>
+        <td style="color:${RED_2025};">${fmtTHB(r25)}</td>
         <td class="${rGrowth<0?'neg-num':'pos-num'}">${rGrowth.toFixed(1)}%</td>
-        <td>${fmtTHB(e25)}</td>
-        <td>${fmtTHB(e26)}</td>
+        <td style="color:${PURPLE}; font-weight:600;">${fmtTHB(e26)}</td>
+        <td style="color:${PURPLE_2025};">${fmtTHB(e25)}</td>
         <td class="${eChange>0?'neg-num':'pos-num'}">${eChange.toFixed(1)}%</td>
-        <td class="${n25<0?'neg-num':'pos-num'}">${fmtTHBsigned(n25)}</td>
         <td class="${n26<0?'neg-num':'pos-num'}">${fmtTHBsigned(n26)}</td>
+        <td class="${n25<0?'neg-num':'pos-num'}">${fmtTHBsigned(n25)}</td>
         <td class="${n26<0?'neg-num':'pos-num'}">${margin26.toFixed(1)}%</td>
       `;
       tbody.appendChild(tr);
@@ -806,14 +807,14 @@ function renderPage(pageNumber) {
 
     trT.innerHTML = `
       <td>Total</td>
-      <td>${fmtTHB(tR25)}</td>
-      <td>${fmtTHB(tR26)}</td>
+      <td style="color:${RED}; font-weight:700;">${fmtTHB(tR26)}</td>
+      <td style="color:${RED_2025}; font-weight:600;">${fmtTHB(tR25)}</td>
       <td class="${totRGrowth<0?'neg-num':'pos-num'}">${totRGrowth.toFixed(1)}%</td>
-      <td>${fmtTHB(tE25)}</td>
-      <td>${fmtTHB(tE26)}</td>
+      <td style="color:${PURPLE}; font-weight:700;">${fmtTHB(tE26)}</td>
+      <td style="color:${PURPLE_2025}; font-weight:600;">${fmtTHB(tE25)}</td>
       <td class="${totEChange>0?'neg-num':'pos-num'}">${totEChange.toFixed(1)}%</td>
-      <td class="${tN25<0?'neg-num':'pos-num'}">${fmtTHBsigned(tN25)}</td>
       <td class="${tN26<0?'neg-num':'pos-num'}">${fmtTHBsigned(tN26)}</td>
+      <td class="${tN25<0?'neg-num':'pos-num'}">${fmtTHBsigned(tN25)}</td>
       <td class="${tN26<0?'neg-num':'pos-num'}">${totMargin26.toFixed(1)}%</td>
     `;
     tbody.appendChild(trT);
@@ -858,7 +859,7 @@ function renderPage(pageNumber) {
     `;
 
     document.getElementById('mainChartTitle').textContent = `Cash Receipts vs Cash Paid Out — 2026 (${rangeLabel})`;
-    document.getElementById('mainChartDesc').textContent = 'กระแสเงินสดรับจริง รายจ่ายเงินสด และยอดเงินสดคงเหลือในธนาคาร';
+    document.getElementById('mainChartDesc').textContent = 'Actual cash receipts, cash payments, and ending bank cash balance';
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
@@ -869,7 +870,7 @@ function renderPage(pageNumber) {
     mainChart.update();
 
     document.getElementById('subChartTitle').textContent = `Net Cash Flow Movement`;
-    document.getElementById('subChartDesc').textContent = 'กระแสเงินสดสุทธิรายเดือน';
+    document.getElementById('subChartDesc').textContent = 'Monthly net cash flow';
     subChart.data.labels = labels;
     subChart.data.datasets = [
       { type:'bar', label:'Net Cash Movement', data:sliceArr(netCashMove2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.6 }
@@ -973,7 +974,7 @@ function renderPage(pageNumber) {
     document.getElementById('kpi5Delta').innerHTML = `Cash Flow: ${fmtTHBsigned(netCashTot)}`;
 
     document.getElementById('mainChartTitle').textContent = `Accrual Revenue vs Cash Receipts — 2026 (${rangeLabel})`;
-    document.getElementById('mainChartDesc').textContent = 'เปรียบเทียบการรับรู้รายได้ทางบัญชีกับการเก็บเงินสดจริง';
+    document.getElementById('mainChartDesc').textContent = 'Comparison of accrual revenue recognition vs actual cash collection';
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
@@ -984,7 +985,7 @@ function renderPage(pageNumber) {
     mainChart.update();
 
     document.getElementById('subChartTitle').textContent = `Accrual Expenses vs Cash Paid Out`;
-    document.getElementById('subChartDesc').textContent = 'เปรียบเทียบค่าใช้จ่ายทางบัญชีกับการจ่ายเงินสดจริง';
+    document.getElementById('subChartDesc').textContent = 'Comparison of accounting expenses vs actual cash payments';
     subChart.data.labels = labels;
     subChart.data.datasets = [
       { type:'bar', label:'Accrual Expenses', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
@@ -1126,7 +1127,7 @@ document.getElementById('downloadBtn').addEventListener('click', function() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   } catch (err) {
-    alert('เกิดข้อผิดพลาดในการดาวน์โหลดไฟล์: ' + err.message);
+    alert('Error downloading file: ' + err.message);
   }
 });
 
@@ -1146,12 +1147,64 @@ document.getElementById('fileUploader').addEventListener('change', function(e) {
         bytes: data,
         mime: file.type || 'application/octet-stream'
       };
-      alert('อัปเดตข้อมูลการเงินและ Cash Flow จากไฟล์ ' + file.name + ' สำเร็จเรียบร้อยแล้ว!');
+      alert('Successfully updated financial and cash flow data from file ' + file.name + '!');
     } catch (err) {
-      alert('เกิดข้อผิดพลาดในการอ่านไฟล์ Excel: ' + err.message);
+      alert('Error reading Excel file: ' + err.message);
     }
   };
   reader.readAsArrayBuffer(file);
+});
+
+// Convert a Uint8Array to a base64 string (inverse of base64ToBytes)
+function bytesToBase64(bytes) {
+  let binaryStr = '';
+  const chunkSize = 0x8000; // avoid call-stack limits on large files
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binaryStr += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binaryStr);
+}
+
+// "Save as new default file" button:
+// Bakes the currently loaded original file (default or last uploaded) into a
+// new copy of this dashboard's HTML as the new default, and downloads it.
+// The person then replaces the old index.html with this new one so the
+// updated data becomes permanent, without needing to re-upload each time.
+document.getElementById('saveAsDefaultBtn').addEventListener('click', function() {
+  try {
+    const newBase64 = bytesToBase64(currentOriginalFile.bytes);
+    const escapedName = currentOriginalFile.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const escapedMime = currentOriginalFile.mime.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+    let fullHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    fullHtml = fullHtml.replace(
+      /const DEFAULT_FILE_NAME = '[^']*';/,
+      "const DEFAULT_FILE_NAME = '" + escapedName + "';"
+    );
+    fullHtml = fullHtml.replace(
+      /const DEFAULT_FILE_BASE64 = '[^']*';/,
+      "const DEFAULT_FILE_BASE64 = '" + newBase64 + "';"
+    );
+    fullHtml = fullHtml.replace(
+      /mime: 'application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet'/,
+      "mime: '" + escapedMime + "'"
+    );
+
+    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('New index.html file saved! Replace the old file with this one to make the latest data the permanent default.');
+  } catch (err) {
+    alert('Error saving the new default file: ' + err.message);
+  }
 });
 
 // Initialize Dashboard
