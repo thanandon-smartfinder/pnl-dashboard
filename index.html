@@ -514,7 +514,7 @@ const catChart1 = new Chart(document.getElementById('catChart1'), {
   type:'bar',
   data:{ labels: [], datasets:[{ data: [], backgroundColor: ctx => {
     const g = ctx.chart.ctx.createLinearGradient(0,0,ctx.chart.width,0);
-    g.addColorStop(0, RED); g.addColorStop(1, PURPLE); return g;
+    g.addColorStop(0, PURPLE_2025); g.addColorStop(1, PURPLE); return g;
   }, borderRadius:4, barPercentage:0.68 }] },
   options:{
     indexAxis:'y', responsive:true, maintainAspectRatio:false,
@@ -566,27 +566,27 @@ function renderPage(pageNumber) {
     const lastMargin = lastRev ? (lastNet / lastRev * 100).toFixed(1) : '0.0';
 
     document.getElementById('kpi1Label').textContent = `Aug Net Profit`;
-    document.getElementById('kpi1Label').style.color = 'var(--muted)';
+    document.getElementById('kpi1Label').style.color = 'var(--maroon)';
     document.getElementById('kpi1Value').textContent = fmtTHB(lastNet);
-    document.getElementById('kpi1Value').style.color = 'var(--ink)';
+    document.getElementById('kpi1Value').style.color = 'var(--maroon)';
     document.getElementById('kpi1Delta').innerHTML = `▲ Net Margin: ${lastMargin}%`;
 
     document.getElementById('kpi2Label').textContent = `YTD Revenue`;
-    document.getElementById('kpi2Label').style.color = 'var(--muted)';
+    document.getElementById('kpi2Label').style.color = 'var(--purple)';
     document.getElementById('kpi2Value').textContent = fmtTHB(sum(sliceArr(rev2026)));
-    document.getElementById('kpi2Value').style.color = 'var(--ink)';
+    document.getElementById('kpi2Value').style.color = 'var(--purple)';
     document.getElementById('kpi2Delta').innerHTML = `Aug Rev: ${fmtTHB(lastRev)}`;
 
     document.getElementById('kpi3Label').textContent = `YTD Total Expenses`;
-    document.getElementById('kpi3Label').style.color = 'var(--muted)';
+    document.getElementById('kpi3Label').style.color = 'var(--red)';
     document.getElementById('kpi3Value').textContent = fmtTHB(sum(sliceArr(totalExp2026)));
-    document.getElementById('kpi3Value').style.color = 'var(--ink)';
+    document.getElementById('kpi3Value').style.color = 'var(--red)';
     document.getElementById('kpi3Delta').innerHTML = `Aug Exp: ${fmtTHB(sliceArr(totalExp2026)[lastIdx])}`;
 
     document.getElementById('kpi4Label').textContent = `YTD Net Profit`;
-    document.getElementById('kpi4Label').style.color = 'var(--muted)';
+    document.getElementById('kpi4Label').style.color = 'var(--maroon)';
     document.getElementById('kpi4Value').textContent = fmtTHB(sum(sliceArr(netProfit2026)));
-    document.getElementById('kpi4Value').style.color = 'var(--ink)';
+    document.getElementById('kpi4Value').style.color = 'var(--maroon)';
     document.getElementById('kpi4Delta').innerHTML = `▲ YTD Net Margin: ${(sum(sliceArr(rev2026))?(sum(sliceArr(netProfit2026))/sum(sliceArr(rev2026))*100):0).toFixed(1)}%`;
 
     document.getElementById('kpi5Label').textContent = `Ending Cash Balance`;
@@ -603,8 +603,8 @@ function renderPage(pageNumber) {
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Total Revenue', data:sliceArr(rev2026), backgroundColor:RED, borderRadius:4, barPercentage:0.55 },
-      { type:'bar', label:'Total Expenses', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Total Revenue', data:sliceArr(rev2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Total Expenses', data:sliceArr(totalExp2026), backgroundColor:RED, borderRadius:4, barPercentage:0.55 },
       { type:'line', label:'Net Profit', data:sliceArr(netProfit2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     mainChart.update();
@@ -656,13 +656,13 @@ function renderPage(pageNumber) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${m}</td>
-        <td>${fmtTHB(r)}</td>
-        <td>${fmtTHB(op)}</td>
-        <td>${opPct}</td>
-        <td>${fmtTHB(non)}</td>
-        <td>${nonPct}</td>
-        <td>${fmtTHB(e)}</td>
-        <td>${ePct}</td>
+        <td style="color:${PURPLE};">${fmtTHB(r)}</td>
+        <td style="color:${RED};">${fmtTHB(op)}</td>
+        <td style="color:${RED};">${opPct}</td>
+        <td style="color:${RED};">${fmtTHB(non)}</td>
+        <td style="color:${RED};">${nonPct}</td>
+        <td style="color:${RED}; font-weight:600;">${fmtTHB(e)}</td>
+        <td style="color:${RED}; font-weight:600;">${ePct}</td>
         <td class="${n<0?'neg-num':'pos-num'}">${fmtTHBsigned(n)}</td>
         <td class="${n<0?'neg-num':'pos-num'}">${marginPct}</td>
       `;
@@ -677,13 +677,13 @@ function renderPage(pageNumber) {
 
     trT.innerHTML = `
       <td>Total</td>
-      <td>${fmtTHB(tR)}</td>
-      <td>${fmtTHB(tOp)}</td>
-      <td>${totOpPct}</td>
-      <td>${fmtTHB(tNon)}</td>
-      <td>${totNonPct}</td>
-      <td>${fmtTHB(tE)}</td>
-      <td>${totEPct}</td>
+      <td style="color:${PURPLE}; font-weight:700;">${fmtTHB(tR)}</td>
+      <td style="color:${RED};">${fmtTHB(tOp)}</td>
+      <td style="color:${RED};">${totOpPct}</td>
+      <td style="color:${RED};">${fmtTHB(tNon)}</td>
+      <td style="color:${RED};">${totNonPct}</td>
+      <td style="color:${RED}; font-weight:700;">${fmtTHB(tE)}</td>
+      <td style="color:${RED}; font-weight:700;">${totEPct}</td>
       <td class="${tN<0?'neg-num':'pos-num'}">${fmtTHBsigned(tN)}</td>
       <td class="${tN<0?'neg-num':'pos-num'}">${totMarginPct}</td>
     `;
@@ -696,26 +696,26 @@ function renderPage(pageNumber) {
     const n26=sum(sliceArr(netProfit2026)), n25=sum(sliceArr(netProfit2025));
     const rGrowth = r25 ? (r26-r25)/r25*100 : 0;
 
-    // KPI Card 1: YTD Revenue 2026 (Red #931914)
+    // KPI Card 1: YTD Revenue 2026 (Purple #4D2773 — revenue should not read as red)
     document.getElementById('kpi1Label').textContent = `YTD REVENUE 2026`;
-    document.getElementById('kpi1Label').style.color = 'var(--red)';
+    document.getElementById('kpi1Label').style.color = 'var(--purple)';
     document.getElementById('kpi1Value').textContent = fmtTHB(r26);
-    document.getElementById('kpi1Value').style.color = 'var(--red)';
+    document.getElementById('kpi1Value').style.color = 'var(--purple)';
     document.getElementById('kpi1Delta').innerHTML = `${rGrowth>=0?'▲':'▼'} YoY Growth: ${rGrowth.toFixed(1)}%`;
 
-    // KPI Card 2: YTD Revenue 2025 (Light Red #B87272 — corporate-brand tint of #931914)
+    // KPI Card 2: YTD Revenue 2025 (Light Purple #7D6293 — corporate-brand tint of #4D2773)
     document.getElementById('kpi2Label').textContent = `YTD REVENUE 2025`;
-    document.getElementById('kpi2Label').style.color = RED_2025;
+    document.getElementById('kpi2Label').style.color = PURPLE_2025;
     document.getElementById('kpi2Value').textContent = fmtTHB(r25);
-    document.getElementById('kpi2Value').style.color = RED_2025;
+    document.getElementById('kpi2Value').style.color = PURPLE_2025;
     document.getElementById('kpi2Delta').innerHTML = `Prior Year Baseline`;
 
-    // KPI Card 3: YTD Expenses 2026 (Purple #4D2773 & Light Purple Subtext)
+    // KPI Card 3: YTD Expenses 2026 (Red #931914 — expenses in the red-toned family)
     document.getElementById('kpi3Label').textContent = `YTD EXPENSES 2026`;
-    document.getElementById('kpi3Label').style.color = 'var(--purple)';
+    document.getElementById('kpi3Label').style.color = 'var(--red)';
     document.getElementById('kpi3Value').textContent = fmtTHB(e26);
-    document.getElementById('kpi3Value').style.color = 'var(--purple)';
-    document.getElementById('kpi3Delta').innerHTML = `<span style="color:${PURPLE_2025};">2025: ${fmtTHB(e25)}</span>`;
+    document.getElementById('kpi3Value').style.color = 'var(--red)';
+    document.getElementById('kpi3Delta').innerHTML = `<span style="color:${RED_2025};">2025: ${fmtTHB(e25)}</span>`;
 
     // KPI Card 4: YTD Net Profit 2026 (Maroon #741041)
     document.getElementById('kpi4Label').textContent = `YTD NET PROFIT 2026`;
@@ -736,10 +736,10 @@ function renderPage(pageNumber) {
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Revenue 2026', data:sliceArr(rev2026), backgroundColor:RED, borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Revenue 2025', data:sliceArr(rev2025), backgroundColor:RED_2025, borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Expenses 2026', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.6 },
-      { type:'bar', label:'Expenses 2025', data:sliceArr(totalExp2025), backgroundColor:PURPLE_2025, borderRadius:4, barPercentage:0.6 }
+      { type:'bar', label:'Revenue 2026', data:sliceArr(rev2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Revenue 2025', data:sliceArr(rev2025), backgroundColor:PURPLE_2025, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Expenses 2026', data:sliceArr(totalExp2026), backgroundColor:RED, borderRadius:4, barPercentage:0.6 },
+      { type:'bar', label:'Expenses 2025', data:sliceArr(totalExp2025), backgroundColor:RED_2025, borderRadius:4, barPercentage:0.6 }
     ];
     mainChart.update();
 
@@ -787,11 +787,11 @@ function renderPage(pageNumber) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${m}</td>
-        <td style="color:${RED}; font-weight:600;">${fmtTHB(r26)}</td>
-        <td style="color:${RED_2025};">${fmtTHB(r25)}</td>
+        <td style="color:${PURPLE}; font-weight:600;">${fmtTHB(r26)}</td>
+        <td style="color:${PURPLE_2025};">${fmtTHB(r25)}</td>
         <td class="${rGrowth<0?'neg-num':'pos-num'}">${rGrowth.toFixed(1)}%</td>
-        <td style="color:${PURPLE}; font-weight:600;">${fmtTHB(e26)}</td>
-        <td style="color:${PURPLE_2025};">${fmtTHB(e25)}</td>
+        <td style="color:${RED}; font-weight:600;">${fmtTHB(e26)}</td>
+        <td style="color:${RED_2025};">${fmtTHB(e25)}</td>
         <td class="${eChange>0?'neg-num':'pos-num'}">${eChange.toFixed(1)}%</td>
         <td class="${n26<0?'neg-num':'pos-num'}">${fmtTHBsigned(n26)}</td>
         <td class="${n25<0?'neg-num':'pos-num'}">${fmtTHBsigned(n25)}</td>
@@ -807,11 +807,11 @@ function renderPage(pageNumber) {
 
     trT.innerHTML = `
       <td>Total</td>
-      <td style="color:${RED}; font-weight:700;">${fmtTHB(tR26)}</td>
-      <td style="color:${RED_2025}; font-weight:600;">${fmtTHB(tR25)}</td>
+      <td style="color:${PURPLE}; font-weight:700;">${fmtTHB(tR26)}</td>
+      <td style="color:${PURPLE_2025}; font-weight:600;">${fmtTHB(tR25)}</td>
       <td class="${totRGrowth<0?'neg-num':'pos-num'}">${totRGrowth.toFixed(1)}%</td>
-      <td style="color:${PURPLE}; font-weight:700;">${fmtTHB(tE26)}</td>
-      <td style="color:${PURPLE_2025}; font-weight:600;">${fmtTHB(tE25)}</td>
+      <td style="color:${RED}; font-weight:700;">${fmtTHB(tE26)}</td>
+      <td style="color:${RED_2025}; font-weight:600;">${fmtTHB(tE25)}</td>
       <td class="${totEChange>0?'neg-num':'pos-num'}">${totEChange.toFixed(1)}%</td>
       <td class="${tN26<0?'neg-num':'pos-num'}">${fmtTHBsigned(tN26)}</td>
       <td class="${tN25<0?'neg-num':'pos-num'}">${fmtTHBsigned(tN25)}</td>
@@ -826,21 +826,21 @@ function renderPage(pageNumber) {
     const netMove = sum(sliceArr(netCashMove2026));
 
     document.getElementById('kpi1Label').textContent = `Aug Cash Receipts`;
-    document.getElementById('kpi1Label').style.color = 'var(--muted)';
+    document.getElementById('kpi1Label').style.color = CASH_BLUE;
     document.getElementById('kpi1Value').textContent = fmtTHB(sliceArr(cashRecOp2026)[lastIdx]);
-    document.getElementById('kpi1Value').style.color = 'var(--ink)';
+    document.getElementById('kpi1Value').style.color = CASH_BLUE;
     document.getElementById('kpi1Delta').innerHTML = `Operating Inflow`;
 
     document.getElementById('kpi2Label').textContent = `YTD Cash Receipts`;
-    document.getElementById('kpi2Label').style.color = 'var(--muted)';
+    document.getElementById('kpi2Label').style.color = CASH_BLUE;
     document.getElementById('kpi2Value').textContent = fmtTHB(crTot);
-    document.getElementById('kpi2Value').style.color = 'var(--ink)';
+    document.getElementById('kpi2Value').style.color = CASH_BLUE;
     document.getElementById('kpi2Delta').innerHTML = `Cash Collections`;
 
     document.getElementById('kpi3Label').textContent = `YTD Total Cash Paid Out`;
-    document.getElementById('kpi3Label').style.color = 'var(--muted)';
+    document.getElementById('kpi3Label').style.color = 'var(--red)';
     document.getElementById('kpi3Value').textContent = fmtTHB(cpTot);
-    document.getElementById('kpi3Value').style.color = 'var(--ink)';
+    document.getElementById('kpi3Value').style.color = 'var(--red)';
     document.getElementById('kpi3Delta').innerHTML = `Cash Disbursements`;
 
     document.getElementById('kpi4Label').textContent = `YTD Net Cash Movement`;
@@ -864,7 +864,7 @@ function renderPage(pageNumber) {
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
       { type:'bar', label:'Cash Receipts', data:sliceArr(cashRecOp2026), backgroundColor:CASH_BLUE, borderRadius:4, barPercentage:0.55 },
-      { type:'bar', label:'Total Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:'#E07A5F', borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Total Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:RED, borderRadius:4, barPercentage:0.55 },
       { type:'line', label:'Ending Cash Balance', data:sliceArr(cashBank2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     mainChart.update();
@@ -909,8 +909,8 @@ function renderPage(pageNumber) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${m}</td>
-        <td>${fmtTHB(cr)}</td>
-        <td>${fmtTHB(cp)}</td>
+        <td style="color:${CASH_BLUE};">${fmtTHB(cr)}</td>
+        <td style="color:${RED};">${fmtTHB(cp)}</td>
         <td class="${cp>cr?'neg-num':'pos-num'}">${paidPctOfRec}</td>
         <td class="${cm<0?'neg-num':'pos-num'}">${fmtTHBsigned(cm)}</td>
         <td class="${cm<0?'neg-num':'pos-num'}">${cashMargin}</td>
@@ -926,8 +926,8 @@ function renderPage(pageNumber) {
 
     trT.innerHTML = `
       <td>Total</td>
-      <td>${fmtTHB(tCR)}</td>
-      <td>${fmtTHB(tCP)}</td>
+      <td style="color:${CASH_BLUE}; font-weight:700;">${fmtTHB(tCR)}</td>
+      <td style="color:${RED}; font-weight:700;">${fmtTHB(tCP)}</td>
       <td class="${tCP>tCR?'neg-num':'pos-num'}">${totPaidPctOfRec}</td>
       <td class="${tCM<0?'neg-num':'pos-num'}">${fmtTHBsigned(tCM)}</td>
       <td class="${tCM<0?'neg-num':'pos-num'}">${totCashMargin}</td>
@@ -944,33 +944,33 @@ function renderPage(pageNumber) {
     const expDiff = cpTot - eTot;
 
     document.getElementById('kpi1Label').textContent = `YTD Operating Revenue`;
-    document.getElementById('kpi1Label').style.color = 'var(--muted)';
+    document.getElementById('kpi1Label').style.color = 'var(--purple)';
     document.getElementById('kpi1Value').textContent = fmtTHB(rTot);
-    document.getElementById('kpi1Value').style.color = 'var(--ink)';
+    document.getElementById('kpi1Value').style.color = 'var(--purple)';
     document.getElementById('kpi1Delta').innerHTML = `Accrual Basis`;
 
     document.getElementById('kpi2Label').textContent = `YTD Cash Receipts`;
-    document.getElementById('kpi2Label').style.color = 'var(--muted)';
+    document.getElementById('kpi2Label').style.color = CASH_BLUE;
     document.getElementById('kpi2Value').textContent = fmtTHB(crTot);
-    document.getElementById('kpi2Value').style.color = 'var(--ink)';
+    document.getElementById('kpi2Value').style.color = CASH_BLUE;
     document.getElementById('kpi2Delta').innerHTML = `▲ Collection Diff: ${fmtTHBsigned(revDiff)}`;
 
     document.getElementById('kpi3Label').textContent = `YTD Total Expenses`;
-    document.getElementById('kpi3Label').style.color = 'var(--muted)';
+    document.getElementById('kpi3Label').style.color = 'var(--red)';
     document.getElementById('kpi3Value').textContent = fmtTHB(eTot);
-    document.getElementById('kpi3Value').style.color = 'var(--ink)';
+    document.getElementById('kpi3Value').style.color = 'var(--red)';
     document.getElementById('kpi3Delta').innerHTML = `Accrual Basis`;
 
     document.getElementById('kpi4Label').textContent = `YTD Cash Paid Out`;
-    document.getElementById('kpi4Label').style.color = 'var(--muted)';
+    document.getElementById('kpi4Label').style.color = 'var(--red)';
     document.getElementById('kpi4Value').textContent = fmtTHB(cpTot);
-    document.getElementById('kpi4Value').style.color = 'var(--ink)';
+    document.getElementById('kpi4Value').style.color = 'var(--red)';
     document.getElementById('kpi4Delta').innerHTML = `Variance: ${fmtTHBsigned(expDiff)}`;
 
     document.getElementById('kpi5Label').textContent = `Net Profit vs Cash Flow`;
-    document.getElementById('kpi5Label').style.color = 'var(--muted)';
+    document.getElementById('kpi5Label').style.color = 'var(--maroon)';
     document.getElementById('kpi5Value').textContent = fmtTHB(netProfitTot);
-    document.getElementById('kpi5Value').style.color = 'var(--ink)';
+    document.getElementById('kpi5Value').style.color = 'var(--maroon)';
     document.getElementById('kpi5Delta').innerHTML = `Cash Flow: ${fmtTHBsigned(netCashTot)}`;
 
     document.getElementById('mainChartTitle').textContent = `Accrual Revenue vs Cash Receipts — 2026 (${rangeLabel})`;
@@ -978,9 +978,9 @@ function renderPage(pageNumber) {
     
     mainChart.data.labels = labels;
     mainChart.data.datasets = [
-      { type:'bar', label:'Operating Revenue (Accrual)', data:sliceArr(rev2026), backgroundColor:MAROON, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Operating Revenue (Accrual)', data:sliceArr(rev2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
       { type:'bar', label:'Cash Receipts (Cash Flow)', data:sliceArr(cashRecOp2026), backgroundColor:CASH_BLUE, borderRadius:4, barPercentage:0.55 },
-      { type:'line', label:'Net Profit (Accrual)', data:sliceArr(netProfit2026), borderColor:RED, backgroundColor:RED, borderWidth:2.5, pointRadius:4, tension:.35 }
+      { type:'line', label:'Net Profit (Accrual)', data:sliceArr(netProfit2026), borderColor:MAROON, backgroundColor:MAROON, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
     mainChart.update();
 
@@ -988,7 +988,7 @@ function renderPage(pageNumber) {
     document.getElementById('subChartDesc').textContent = 'Comparison of accounting expenses vs actual cash payments';
     subChart.data.labels = labels;
     subChart.data.datasets = [
-      { type:'bar', label:'Accrual Expenses', data:sliceArr(totalExp2026), backgroundColor:PURPLE, borderRadius:4, barPercentage:0.55 },
+      { type:'bar', label:'Accrual Expenses', data:sliceArr(totalExp2026), backgroundColor:RED, borderRadius:4, barPercentage:0.55 },
       { type:'bar', label:'Cash Paid Out', data:sliceArr(totalCashPaid2026), backgroundColor:'#E07A5F', borderRadius:4, barPercentage:0.55 },
       { type:'line', label:'Ending Cash Balance', data:sliceArr(cashBank2026), borderColor:CASH_BLUE, backgroundColor:CASH_BLUE, borderWidth:2.5, pointRadius:4, tension:.35 }
     ];
@@ -1030,11 +1030,11 @@ function renderPage(pageNumber) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${m}</td>
-        <td>${fmtTHB(r)}</td>
-        <td>${fmtTHB(cr)}</td>
+        <td style="color:${PURPLE};">${fmtTHB(r)}</td>
+        <td style="color:${CASH_BLUE};">${fmtTHB(cr)}</td>
         <td class="${cr>=r?'pos-num':'neg-num'}">${collPct}</td>
-        <td>${fmtTHB(e)}</td>
-        <td>${fmtTHB(cp)}</td>
+        <td style="color:${RED};">${fmtTHB(e)}</td>
+        <td style="color:${RED};">${fmtTHB(cp)}</td>
         <td class="${cp>e?'neg-num':'pos-num'}">${disbPct}</td>
         <td class="${np<0?'neg-num':'pos-num'}">${fmtTHBsigned(np)}</td>
         <td class="${nc<0?'neg-num':'pos-num'}">${fmtTHBsigned(nc)}</td>
@@ -1050,11 +1050,11 @@ function renderPage(pageNumber) {
 
     trT.innerHTML = `
       <td>Total</td>
-      <td>${fmtTHB(tR)}</td>
-      <td>${fmtTHB(tCR)}</td>
+      <td style="color:${PURPLE}; font-weight:700;">${fmtTHB(tR)}</td>
+      <td style="color:${CASH_BLUE}; font-weight:700;">${fmtTHB(tCR)}</td>
       <td class="${tCR>=tR?'pos-num':'neg-num'}">${totCollPct}</td>
-      <td>${fmtTHB(tE)}</td>
-      <td>${fmtTHB(tCP)}</td>
+      <td style="color:${RED}; font-weight:700;">${fmtTHB(tE)}</td>
+      <td style="color:${RED}; font-weight:700;">${fmtTHB(tCP)}</td>
       <td class="${tCP>tE?'neg-num':'pos-num'}">${totDisbPct}</td>
       <td class="${tNP<0?'neg-num':'pos-num'}">${fmtTHBsigned(tNP)}</td>
       <td class="${tNC<0?'neg-num':'pos-num'}">${fmtTHBsigned(tNC)}</td>
