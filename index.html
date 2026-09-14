@@ -411,31 +411,56 @@ const totalCashPaid2026 = [5712624, 5459133, 8169569, 9676262, 6105601, 5045901,
 const netCashMove2026 = [555272, 1934577, -1172043, -987810, -817097, 3018379, 631745, 2490510];
 const cashBank2026 = [16942844, 18877421, 17705378, 16717568, 15900471, 18918850, 19550595, 22036017];
 
-// Product Line Revenue Distributions
-const revProductMap = [
-  { label: 'Annual Maintenance', val: 16255408 },
-  { label: 'Licenses Revenue', val: 12790479 },
-  { label: 'Services Fee (Imp/CS/Dev)', val: 4720766 },
-  { label: 'Cloud Services (Azure)', val: 3879106 },
-  { label: 'PAX Machine Revenue', val: 1945140 },
-  { label: 'SaaS Subscription Fee', val: 1698583 },
-  { label: 'Hardware & Equipment', val: 1311240 },
-  { label: '3rd Party & Others', val: 1940660 }
-];
+// Product Line Revenue — Monthly breakdown (Jan–Aug 2026, from source Actual P&L)
+const revAnnualMaint    = [3594004, 1432038, 1746182, 1486900, 1588082, 2153497, 2144679, 2110026];
+const revLicenses       = [2557521, 1688580, 1962185, 976349, 1294801, 1160965, 1777742, 1372336];
+const revServicesFee    = [530453, 404000, 932500, 341579, 327458, 680477, 1156000, 348300];
+const revCloudServices  = [438450, 414450, 418450, 591828, 467065, 513065, 506899, 528899];
+const revPAXMachine     = [219300, 211450, 315400, 54850, 308440, 409000, 329950, 96750];
+const revSaaSSub        = [190352, 201852, 205727, 205847, 222143, 222530, 209357, 240777];
+const revHardwareEquip  = [149580, 206150, 91950, 178300, 99450, 134250, 232350, 219210];
+const rev3rdPartyOthers = [204170, 345553, 255475, 356160, 743621, -25404, -199352, 260436];
 
-// Operating Expense Distributions
-const opExpCategoryMap = [
-  { label: 'Salary - CS & Operations', val: 6590318 },
-  { label: 'Salary - Management & BD', val: 6140000 },
-  { label: 'Salary - Sales & Marketing', val: 4804796 },
-  { label: 'Salary - R&D / Dev', val: 4192117 },
-  { label: 'Cloud Azure Infrastructure', val: 1976270 },
-  { label: 'Salary - Finance & Admin', val: 1641005 },
-  { label: 'Depreciation & Amortization', val: 1137088 },
-  { label: 'Licenses & COGS Cost', val: 940209 },
-  { label: 'Hardware & PAX Cost', val: 1445106 },
-  { label: 'Selling & Event Expenses', val: 1087859 }
-];
+// Operating Expense Drivers — Monthly breakdown (Jan–Aug 2026, from source Actual P&L)
+const expSalaryCSOps        = [896547, 901208, 758752, 808752, 808518, 808547, 807872, 800122];
+const expSalaryMgmtBD       = [700000, 700000, 840000, 780000, 780000, 780000, 780000, 780000];
+const expSalarySalesMkt     = [585024, 585740, 634922, 634922, 654422, 569922, 569922, 569922];
+const expSalaryRnD          = [539369, 563802, 555833, 506449, 506666, 506666, 506666, 506666];
+const expCloudAzureInfra    = [227448, 211942, 226908, 233456, 238772, 275010, 282734, 280000];
+const expSalaryFinanceAdmin = [236428, 236428, 194692, 194692, 194692, 194692, 194692, 194692];
+const expDepreciation       = [118873, 109673, 121687, 121906, 166803, 162030, 168176, 167941];
+const expLicensesCOGS       = [119941, 108334, 119941, 116077, 119946, 116077, 119946, 119946];
+const expHardwarePAXCost    = [196825, 189729, 154957, 108426, 136640, 230592, 280686, 147251];
+// costSelling (defined above) = Total Selling Expenses, reused here as "Selling & Event Expenses"
+
+// Dynamic breakdown builders — recompute totals for whichever period range is selected (state.from..state.to)
+function getRevProductBreakdown() {
+  return [
+    { label: 'Annual Maintenance', val: sum(sliceArr(revAnnualMaint)) },
+    { label: 'Licenses Revenue', val: sum(sliceArr(revLicenses)) },
+    { label: 'Services Fee (Imp/CS/Dev)', val: sum(sliceArr(revServicesFee)) },
+    { label: 'Cloud Services (Azure)', val: sum(sliceArr(revCloudServices)) },
+    { label: 'PAX Machine Revenue', val: sum(sliceArr(revPAXMachine)) },
+    { label: 'SaaS Subscription Fee', val: sum(sliceArr(revSaaSSub)) },
+    { label: 'Hardware & Equipment', val: sum(sliceArr(revHardwareEquip)) },
+    { label: '3rd Party & Others', val: sum(sliceArr(rev3rdPartyOthers)) }
+  ];
+}
+
+function getOpExpCategoryBreakdown() {
+  return [
+    { label: 'Salary - CS & Operations', val: sum(sliceArr(expSalaryCSOps)) },
+    { label: 'Salary - Management & BD', val: sum(sliceArr(expSalaryMgmtBD)) },
+    { label: 'Salary - Sales & Marketing', val: sum(sliceArr(expSalarySalesMkt)) },
+    { label: 'Salary - R&D / Dev', val: sum(sliceArr(expSalaryRnD)) },
+    { label: 'Cloud Azure Infrastructure', val: sum(sliceArr(expCloudAzureInfra)) },
+    { label: 'Salary - Finance & Admin', val: sum(sliceArr(expSalaryFinanceAdmin)) },
+    { label: 'Depreciation & Amortization', val: sum(sliceArr(expDepreciation)) },
+    { label: 'Licenses & COGS Cost', val: sum(sliceArr(expLicensesCOGS)) },
+    { label: 'Hardware & PAX Cost', val: sum(sliceArr(expHardwarePAXCost)) },
+    { label: 'Selling & Event Expenses', val: sum(sliceArr(costSelling)) }
+  ];
+}
 
 const sum = arr => (arr || []).reduce((a,b)=>a+(Number(b)||0), 0);
 const fmtTHB = n => {
@@ -620,12 +645,16 @@ function renderPage(pageNumber) {
     ];
     subChart.update();
 
-    catChart1.data.labels = revProductMap.map(x=>x.label);
-    catChart1.data.datasets[0].data = revProductMap.map(x=>x.val);
+    const revBreakdown = getRevProductBreakdown();
+    const expBreakdown = getOpExpCategoryBreakdown();
+    document.getElementById('catChart1Desc').textContent = `${rangeLabel} (% Share)`;
+    document.getElementById('catChart2Desc').textContent = `${rangeLabel} (% Share)`;
+    catChart1.data.labels = revBreakdown.map(x=>x.label);
+    catChart1.data.datasets[0].data = revBreakdown.map(x=>x.val);
     catChart1.update();
 
-    catChart2.data.labels = opExpCategoryMap.map(x=>x.label);
-    catChart2.data.datasets[0].data = opExpCategoryMap.map(x=>x.val);
+    catChart2.data.labels = expBreakdown.map(x=>x.label);
+    catChart2.data.datasets[0].data = expBreakdown.map(x=>x.val);
     catChart2.update();
 
     // Table P&L ALL
@@ -752,12 +781,16 @@ function renderPage(pageNumber) {
     ];
     subChart.update();
 
-    catChart1.data.labels = revProductMap.map(x=>x.label);
-    catChart1.data.datasets[0].data = revProductMap.map(x=>x.val);
+    const revBreakdown = getRevProductBreakdown();
+    const expBreakdown = getOpExpCategoryBreakdown();
+    document.getElementById('catChart1Desc').textContent = `${rangeLabel} (% Share)`;
+    document.getElementById('catChart2Desc').textContent = `${rangeLabel} (% Share)`;
+    catChart1.data.labels = revBreakdown.map(x=>x.label);
+    catChart1.data.datasets[0].data = revBreakdown.map(x=>x.val);
     catChart1.update();
 
-    catChart2.data.labels = opExpCategoryMap.map(x=>x.label);
-    catChart2.data.datasets[0].data = opExpCategoryMap.map(x=>x.val);
+    catChart2.data.labels = expBreakdown.map(x=>x.label);
+    catChart2.data.datasets[0].data = expBreakdown.map(x=>x.val);
     catChart2.update();
 
     // Table Compare Years
@@ -877,12 +910,16 @@ function renderPage(pageNumber) {
     ];
     subChart.update();
 
-    catChart1.data.labels = revProductMap.map(x=>x.label);
-    catChart1.data.datasets[0].data = revProductMap.map(x=>x.val);
+    const revBreakdown = getRevProductBreakdown();
+    const expBreakdown = getOpExpCategoryBreakdown();
+    document.getElementById('catChart1Desc').textContent = `${rangeLabel} (% Share)`;
+    document.getElementById('catChart2Desc').textContent = `${rangeLabel} (% Share)`;
+    catChart1.data.labels = revBreakdown.map(x=>x.label);
+    catChart1.data.datasets[0].data = revBreakdown.map(x=>x.val);
     catChart1.update();
 
-    catChart2.data.labels = opExpCategoryMap.map(x=>x.label);
-    catChart2.data.datasets[0].data = opExpCategoryMap.map(x=>x.val);
+    catChart2.data.labels = expBreakdown.map(x=>x.label);
+    catChart2.data.datasets[0].data = expBreakdown.map(x=>x.val);
     catChart2.update();
 
     // Table Cash Flow
@@ -994,12 +1031,16 @@ function renderPage(pageNumber) {
     ];
     subChart.update();
 
-    catChart1.data.labels = revProductMap.map(x=>x.label);
-    catChart1.data.datasets[0].data = revProductMap.map(x=>x.val);
+    const revBreakdown = getRevProductBreakdown();
+    const expBreakdown = getOpExpCategoryBreakdown();
+    document.getElementById('catChart1Desc').textContent = `${rangeLabel} (% Share)`;
+    document.getElementById('catChart2Desc').textContent = `${rangeLabel} (% Share)`;
+    catChart1.data.labels = revBreakdown.map(x=>x.label);
+    catChart1.data.datasets[0].data = revBreakdown.map(x=>x.val);
     catChart1.update();
 
-    catChart2.data.labels = opExpCategoryMap.map(x=>x.label);
-    catChart2.data.datasets[0].data = opExpCategoryMap.map(x=>x.val);
+    catChart2.data.labels = expBreakdown.map(x=>x.label);
+    catChart2.data.datasets[0].data = expBreakdown.map(x=>x.val);
     catChart2.update();
 
     // Table Compare P&L vs CASH FLOW
